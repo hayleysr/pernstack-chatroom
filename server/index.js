@@ -2,10 +2,13 @@ const express = require("express");
 const app = express();
 const cors = require("cors"); //middleware
 const pool = require("./db"); //run queries
+const dotenv = require('dotenv'); //store environmental variables
 
 //middleware
 app.use(cors());
 app.use(express.json()); //req.body
+
+dotenv.config();
 
 //ROUTES//
 
@@ -64,6 +67,6 @@ app.delete("/chatlog/:id", async(req, res) => {
     }
 });
 
-app.listen(5000, () => {
-    console.log("Server has started on port 5000.")
+app.listen(process.env.PORT, () => {
+    console.log(`Server has started on port ${process.env.PORT}.`)
 });
