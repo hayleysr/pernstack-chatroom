@@ -16,4 +16,4 @@ export default function EditChat({msg, ...props}){
         <Modal open={modalVisible} onClose={handleClose} msg={msg} {...props}/>
         </>
     );
-}
+}   

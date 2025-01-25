@@ -41,7 +41,7 @@ export default function DisplayChat(){
                     <tbody>
                         {messages.map((msg) => (
                             <tr key={msg.msg_id}>
-                                <td className="user">Anonymous</td>
+                                <td className="user">{msg.username ? msg.username : "Anonymous"}</td>
                                 <td className="msgtext">{msg.description}</td>
                                 <td><EditChat msg={msg} /></td>
                                 <td><button className="btnDelete" onClick={() => {handleDelete(msg.msg_id)}}>X</button></td>

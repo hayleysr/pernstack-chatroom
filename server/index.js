@@ -12,8 +12,8 @@ app.use(express.json()); //req.body
 //create message
 app.post("/chatlog", async(req,res) => {
     try{
-        const {description} = req.body;
-        const newMsg = await pool.query("INSERT INTO chatlog (description) VALUES($1) RETURNING *", [description]);
+        const {username, description} = req.body;
+        const newMsg = await pool.query("INSERT INTO chatlog (username, description) VALUES($1, $2) RETURNING *", [username, description]);
         res.json(newMsg.rows[0]);
     }catch(err){
         console.log(err.message);

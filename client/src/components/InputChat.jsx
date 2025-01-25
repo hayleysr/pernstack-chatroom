@@ -1,12 +1,12 @@
 import {useState} from "react";
 
-export default function InputChat({...props}){
+export default function InputChat({username, ...props}){
     const [description, setDescription] = useState("");
 
     const onSubmitForm = async(e)=>{
         e.preventDefault();
         try {
-            const body = {description};
+            const body = {username, description};
             const response = await fetch("http://localhost:5000/chatlog",{
                 method: "POST",
                 headers: { "Content-Type": "application/json"},
