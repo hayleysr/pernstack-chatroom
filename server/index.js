@@ -2,13 +2,16 @@ const express = require("express");
 const app = express();
 const cors = require("cors"); //middleware
 const pool = require("./db"); //run queries
-const dotenv = require('dotenv'); //store environmental variables
+const env = require("dotenv").config(); //store environmental variables
+
+//connect to supabase
+const supabaseURL = process.env.DATABASE_URL;
+const supabaseKey = process.env.DATABASE_KEY;
+const supabase = require("@supabase/supabase-js").createClient(supabaseURL, supabaseKey);
 
 //middleware
 app.use(cors());
 app.use(express.json()); //req.body
-
-dotenv.config();
 
 //ROUTES//
 
@@ -16,8 +19,9 @@ dotenv.config();
 app.post("/chatlog", async(req,res) => {
     try{
         const {username, description} = req.body;
-        const newMsg = await pool.query("INSERT INTO chatlog (username, description) VALUES($1, $2) RETURNING *", [username, description]);
-        res.json(newMsg.rows[0]);
+        const {data, err} = await supabase.from("chatlog").insert([{username, description}]);
+        res.json(data);
+        console.log(data);
     }catch(err){
         console.log(err.message);
     }
@@ -26,10 +30,12 @@ app.post("/chatlog", async(req,res) => {
 //get all messages
 app.get("/chatlog", async(req, res) => {
     try{
-        const allMsg = await pool.query("SELECT * FROM chatlog");
-        res.json(allMsg.rows);
+        const {data, err} = await supabase.from("chatlog").select();
+        if(err) throw err;
+        res.json(data);
     }catch(err){
-        console.log(err.message);
+        console.log({err});
+        res.status(500).json({ error: "Failed to fetch chat log" });
     }
 })
 
@@ -37,10 +43,10 @@ app.get("/chatlog", async(req, res) => {
 app.get("/chatlog/:id", async(req, res) => {
     try{
         const {id} = req.params;
-        const thisMsg = await pool.query("SELECT * FROM chatlog WHERE msg_id = $1", [id]);
-        res.json(thisMsg.rows[0]);
+        const {data, err} = await supabase.from("chatlog").select().eq("id", [id]);
+        res.json(data[0]);
     }catch(err){
-        console.log(err.message);
+        console.log({err});
     }
 });
 
@@ -48,11 +54,11 @@ app.get("/chatlog/:id", async(req, res) => {
 app.put("/chatlog/:id", async(req, res) => {
     try{
         const {id} = req.params;
-        const {description} = req.body;
-        const editMsg = await pool.query("UPDATE chatlog SET description = $1 WHERE msg_id = $2", [description, id]);
+        const description = req.body;
+        const {data, err} = await supabase.from("chatlog").update({description}).eq("id", [id]);
         res.json("Chatlog was updated");
     }catch(err){
-        console.log(err.message);
+        console.log({err});
     }
 });
 
@@ -60,10 +66,10 @@ app.put("/chatlog/:id", async(req, res) => {
 app.delete("/chatlog/:id", async(req, res) => {
     try{
         const {id} = req.params;
-        const deleteMsg = await pool.query("DELETE FROM chatlog WHERE msg_id = $1", [id]);
+        const {data, err} = await supabase.from("chatlog").delete().eq("id", [id]);
         res.json("Chat was deleted.");
     }catch(err){
-        console.log(err.message);
+        console.log({err});
     }
 });
 

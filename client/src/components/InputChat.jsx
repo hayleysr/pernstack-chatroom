@@ -12,7 +12,7 @@ export default function InputChat({username, ...props}){
                 headers: { "Content-Type": "application/json"},
                 body: JSON.stringify(body)
             });
-            console.log(response);
+            console.log("Raw Response:", response); //debug: raw response
             window.location = "/";
         } catch (err) {
             console.error(err.message);

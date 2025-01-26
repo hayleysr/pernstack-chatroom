@@ -18,7 +18,12 @@ export default function DisplayChat(){
     const getChats = async()=>{
         try {
             const response = await fetch("http://localhost:5000/chatlog");
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+              }
+            //console.log("Raw Response:", response); //debug: raw response
             const jsonData = await response.json(); //parse json
+            //console.log("Parsed Chat Log:", jsonData); // debug: log data
             setMessages(jsonData);
         } catch (error) {
             console.error(error.message);
